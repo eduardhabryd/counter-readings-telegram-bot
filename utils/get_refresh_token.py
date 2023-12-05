@@ -1,11 +1,11 @@
 from google_auth_oauthlib.flow import InstalledAppFlow
 
-CLIENT_ID = '30364144312-4tsjc8mcml377fdl8gdh91nj5qh5lne0.apps.googleusercontent.com'
-CLIENT_SECRET = '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'
+CLIENT_ID = 'your_client_id'
+CLIENT_SECRET = 'your_client_secret'
 SCOPES = ['https://www.googleapis.com/auth/drive', 'https://www.googleapis.com/auth/spreadsheets']
 
 flow = InstalledAppFlow.from_client_secrets_file(
-    'creds.json', scopes=SCOPES,
+    '../creds.json', scopes=SCOPES,
     redirect_uri='urn:ietf:wg:oauth:2.0:oob'
 )
 
