@@ -5,6 +5,7 @@ class Form(StatesGroup):
     lang = State()
     address = State()
     account = State()
+    counter_image = State()
 
 
 class Language:
