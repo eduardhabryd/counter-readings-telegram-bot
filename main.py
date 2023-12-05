@@ -144,7 +144,7 @@ async def command_counter(message: Message, state: FSMContext) -> None:
         body=body,
     ).execute()
 
-    await message.answer("Photo uploaded successfully!")
+    await message.answer(messages_text[lang_type.get_lang()]["success"])
     await state.clear()
 
 
