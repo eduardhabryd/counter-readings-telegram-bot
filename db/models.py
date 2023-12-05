@@ -1,4 +1,6 @@
-from sqlalchemy import Column, Integer, String
+from datetime import datetime
+
+from sqlalchemy import Column, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -22,4 +24,5 @@ class Counter(Base):
 
     id = Column(Integer, primary_key=True)
     telegram_user_id = Column(Integer)
+    created_at = Column(DateTime, default=datetime.now)
     counter_image_url = Column(String)
