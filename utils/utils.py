@@ -25,13 +25,13 @@ messages_text = {
         "account": "Please provide your personal account number:",
         "greetings": "Nice to meet you!",
         "image": "Please, send me an image of the counter :)",
-        "success": "Thank you for your response!",
+        "success": "Photo was uploaded successfully!",
     },
     "ukr": {
         "address": "Введіть вашу адресу:",
         "account": "Введіть ваш номер особового рахунку:",
         "greetings": "Доброго дня!",
         "image": "Будь ласка, надішліть мені зображення лічильника :)",
-        "success": "Дякуємо за відповідь!",
+        "success": "Зображення було успішно завантажено!",
     }
 }
