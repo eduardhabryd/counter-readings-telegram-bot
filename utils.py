@@ -23,10 +23,12 @@ messages_text = {
         "address": "Please provide your address:",
         "account": "Please provide your personal account number:",
         "greetings": "Nice to meet you!",
+        "success": "Thank you for your response!",
     },
     "ukr": {
         "address": "Введіть вашу адресу:",
         "account": "Введіть ваш номер особового рахунку:",
         "greetings": "Доброго дня!",
+        "success": "Дякуємо за відповідь!",
     }
 }
