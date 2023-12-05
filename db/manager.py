@@ -1,6 +1,5 @@
-from sqlalchemy.ext.asyncio import AsyncSession
 from db.database import SessionLocal
-from db.models import User, Counter
+from db.models import User
 
 from sqlalchemy import select
 
@@ -35,14 +34,4 @@ async def create_or_update_user(telegram_user_id, language, address, account):
             )
             session.add(new_user)
 
-        await session.commit()
-
-
-async def create_counter(telegram_user_id, counter_image_url):
-    async with SessionLocal() as session:
-        new_counter = Counter(
-            telegram_user_id=telegram_user_id,
-            counter_image_url=counter_image_url
-        )
-        session.add(new_counter)
         await session.commit()
