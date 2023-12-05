@@ -4,6 +4,7 @@ import sys
 import os
 from os import getenv
 import requests
+from datetime import datetime
 
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
@@ -27,7 +28,6 @@ lang_type = Language("eng")
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
-# Load Google API credentials from JSON file
 creds_filename = 'creds.json'
 creds = None
 if os.path.exists(creds_filename):
@@ -98,22 +98,18 @@ async def account_state(message: Message, state: FSMContext) -> None:
 
 @dp.message(Form.counter_image)
 async def command_counter(message: Message, state: FSMContext) -> None:
-    # Assuming the user sends a photo
-    photo: PhotoSize = message.photo[-1]  # Get the largest available photo
+    photo: PhotoSize = message.photo[-1]
 
-    # Download the photo
     file_info = await message.bot.get_file(photo.file_id)
     file_path = file_info.file_path
     photo_url = f'https://api.telegram.org/file/bot{TOKEN}/{file_path}'
     response = requests.get(photo_url)
     file_name = f'{message.from_user.id}_{message.message_id}.jpg'
 
-    # Save the photo to a local folder
     local_file_path = f'photos/{file_name}'
     with open(local_file_path, 'wb') as f:
         f.write(response.content)
 
-    # Upload the photo to Google Drive
     file_metadata = {
         'name': file_name,
         'parents': [getenv("GOOGLE_DRIVE_FOLDER_ID")]
@@ -122,9 +118,8 @@ async def command_counter(message: Message, state: FSMContext) -> None:
     drive_file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
     file_id = drive_file.get('id')
 
-    # Add a record to Google Sheets
     sheet_id = getenv("GOOGLE_SHEET_ID")
-    values = [[message.from_user.id, file_id]]
+    values = [[message.from_user.id, datetime.now().isoformat(), f'https://drive.google.com/uc?id={file_id}']]
     body = {'values': values}
     sheets_service.spreadsheets().values().append(spreadsheetId=sheet_id, range='Sheet1', valueInputOption='USER_ENTERED', body=body).execute()
 
