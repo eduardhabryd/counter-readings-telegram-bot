@@ -89,4 +89,17 @@ receiving photos of meter readings.
     ```bash
     python3 main.py
     ```
-   
+
+##  🪟 Demo
+
+### Telegram
+![telegram](demo/telegram.png)
+
+### Database
+![db](demo/db.png)
+
+### Google Sheets
+![sheets](demo/sheets.png)
+
+### Google Drive
+![drive](demo/drive.png)
