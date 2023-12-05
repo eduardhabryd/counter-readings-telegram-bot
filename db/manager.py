@@ -23,7 +23,7 @@ async def create_or_update_user(telegram_user_id, language, address, account):
             existing_user.address = address
             existing_user.account = account
 
-            updated_user = await session.merge(existing_user)
+            updated_user = await session.merge(existing_user)  # noqa: F841
         else:
             print("Creating New User")
             new_user = User(

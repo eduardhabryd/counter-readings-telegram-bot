@@ -28,14 +28,14 @@ lang_type = Language("eng")
 storage = MemoryStorage()
 dp = Dispatcher(storage=storage)
 
-creds_filename = 'creds.json'
+creds_filename = "creds.json"
 creds = None
 if os.path.exists(creds_filename):
     creds = Credentials.from_authorized_user_file(creds_filename)
 
-drive_service = build('drive', 'v3', credentials=creds)
+drive_service = build("drive", "v3", credentials=creds)
 
-sheets_service = build('sheets', 'v4', credentials=creds)
+sheets_service = build("sheets", "v4", credentials=creds)
 
 
 @dp.message(CommandStart())
@@ -43,12 +43,12 @@ async def command_start_handler(message: Message, state: FSMContext) -> None:
     await state.set_state(Form.lang)
     kb = [
         [types.KeyboardButton(text="🇬🇧 English")],
-        [types.KeyboardButton(text="🇺🇦 Ukrainian")]
+        [types.KeyboardButton(text="🇺🇦 Ukrainian")],
     ]
     keyboard = types.ReplyKeyboardMarkup(
         keyboard=kb,
         resize_keyboard=True,
-        input_field_placeholder="Choose your language"
+        input_field_placeholder="Choose your language",
     )
     await message.answer("What language do you prefer?", reply_markup=keyboard)
 
@@ -61,7 +61,7 @@ async def language_state(message: Message, state: FSMContext) -> None:
     await state.set_data(
         {
             "telegram_user_id": message.from_user.id,
-            "language": lang_type.get_lang()
+            "language": lang_type.get_lang(),
         }
     )
 
@@ -69,7 +69,9 @@ async def language_state(message: Message, state: FSMContext) -> None:
     greetings = replies["greetings"]
 
     await message.reply(greetings, reply_markup=types.ReplyKeyboardRemove())
-    await message.answer(replies["address"], reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(
+        replies["address"], reply_markup=types.ReplyKeyboardRemove()
+    )
     await state.set_state(Form.address)
 
 
@@ -78,7 +80,9 @@ async def command_address(message: Message, state: FSMContext) -> None:
     replies = messages_text[lang_type.get_lang()]
     address = message.text
     await state.update_data(address=address)
-    await message.answer(replies["account"], reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(
+        replies["account"], reply_markup=types.ReplyKeyboardRemove()
+    )
     await state.set_state(Form.account)
 
 
@@ -92,7 +96,9 @@ async def account_state(message: Message, state: FSMContext) -> None:
     await create_or_update_user(telegram_user_id, language, address, account)
     print(data, account)
     replies = messages_text[lang_type.get_lang()]
-    await message.answer(replies["image"], reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(
+        replies["image"], reply_markup=types.ReplyKeyboardRemove()
+    )
     await state.set_state(Form.counter_image)
 
 
@@ -102,26 +108,41 @@ async def command_counter(message: Message, state: FSMContext) -> None:
 
     file_info = await message.bot.get_file(photo.file_id)
     file_path = file_info.file_path
-    photo_url = f'https://api.telegram.org/file/bot{TOKEN}/{file_path}'
+    photo_url = f"https://api.telegram.org/file/bot{TOKEN}/{file_path}"
     response = requests.get(photo_url)
-    file_name = f'{message.from_user.id}_{message.message_id}.jpg'
+    file_name = f"{message.from_user.id}_{message.message_id}.jpg"
 
-    local_file_path = f'photos/{file_name}'
-    with open(local_file_path, 'wb') as f:
+    local_file_path = f"photos/{file_name}"
+    with open(local_file_path, "wb") as f:
         f.write(response.content)
 
     file_metadata = {
-        'name': file_name,
-        'parents': [getenv("GOOGLE_DRIVE_FOLDER_ID")]
+        "name": file_name,
+        "parents": [getenv("GOOGLE_DRIVE_FOLDER_ID")],
     }
-    media = MediaFileUpload(local_file_path, mimetype='image/jpeg')
-    drive_file = drive_service.files().create(body=file_metadata, media_body=media, fields='id').execute()
-    file_id = drive_file.get('id')
+    media = MediaFileUpload(local_file_path, mimetype="image/jpeg")
+    drive_file = (
+        drive_service.files()
+        .create(body=file_metadata, media_body=media, fields="id")
+        .execute()
+    )
+    file_id = drive_file.get("id")
 
     sheet_id = getenv("GOOGLE_SHEET_ID")
-    values = [[message.from_user.id, datetime.now().isoformat(), f'https://drive.google.com/uc?id={file_id}']]
-    body = {'values': values}
-    sheets_service.spreadsheets().values().append(spreadsheetId=sheet_id, range='Sheet1', valueInputOption='USER_ENTERED', body=body).execute()
+    values = [
+        [
+            message.from_user.id,
+            datetime.now().isoformat(),
+            f"https://drive.google.com/uc?id={file_id}",
+        ]
+    ]
+    body = {"values": values}
+    sheets_service.spreadsheets().values().append(
+        spreadsheetId=sheet_id,
+        range="Sheet1",
+        valueInputOption="USER_ENTERED",
+        body=body,
+    ).execute()
 
     await message.answer("Photo uploaded successfully!")
     await state.clear()
